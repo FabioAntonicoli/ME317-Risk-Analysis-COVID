@@ -1,4 +1,4 @@
-# ME317 Project Report
+# LSE  ME317 Project Report
 
 ## What Happened During the COVID-19 Pandemic?
 
