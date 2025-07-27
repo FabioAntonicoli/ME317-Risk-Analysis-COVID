@@ -1,98 +1,100 @@
-# LSE  ME317 Project Report
-
-## What Happened During the COVID-19 Pandemic?
+#  ME317 Project Report  
+### *What Happened During the COVID-19 Pandemic?*
 
 **Author**: Fabio Antonicoli  
-**Date**: July 27, 2025
+**Date**: July 27, 2025  
 
 ---
 
-## Introduction
+##  Introduction
 
-Early 2020 saw one of the most volatile periods in recent financial history due to the COVID-19 outbreak. Global stock markets reacted with extreme uncertainty. This report analyzes ten diversified US stocks during and after the pandemic shock, using techniques from the ME317 course. We explore return dynamics, develop and backtest a Value-at-Risk (VaR) model, and analyze interdependencies between financial institutions using copulas.
+The COVID-19 outbreak in early 2020 triggered a period of extreme volatility in global stock markets.  
+This report analyzes the performance of 10 diversified US stocks from 2019 to 2023 using techniques from the ME317 course:
 
----
-
-## 1. Data Collection and Preparation
-
-We selected 10 major US stocks across multiple sectors to ensure a diversified view:
-
-- Financials: JPMorgan (JPM), Bank of America (BAC), Goldman Sachs (GS)  
-- Tech/Industrial/Consumer: Apple (AAPL), Microsoft (MSFT), Boeing (BA), Walmart (WMT), Procter & Gamble (PG), ExxonMobil (XOM), Chevron (CVX)
-
-Daily adjusted prices from **January 1, 2019, to December 31, 2022** were collected using the `tidyquant` package.
+- Market dynamics
+- Risk modeling with Value-at-Risk (VaR)
+- Dependence structures with copulas
 
 ---
 
-## 2. Market Dynamics During the Pandemic
+##  1. Data and Stock Selection
 
-A sharp decline in adjusted prices occurred between **February–March 2020**, coinciding with global lockdowns.
+We selected 10 major stocks from various sectors:
 
-**Figure 1**: Adjusted stock prices (2019–2022)  
-> _[Line plot of 10 stock prices over time]_
+- **Financials**: JPM, BAC, GS  
+- **Tech & Industrial**: AAPL, MSFT, BA  
+- **Consumer & Energy**: WMT, PG, XOM, CVX
 
-Daily **log-returns** show extreme spikes in volatility during early 2020. For instance, Boeing (BA) and JPMorgan (JPM) had single-day losses >10%.
-
-**Figure 2**: Daily log-returns (2019–2022)  
-> _[Line plot of daily log-returns for each stock]_
+Historical data was collected from January 1, 2019, to December 31, 2022, using the `tidyquant` R package.
 
 ---
 
-## 3. Sector Relationships and Diversification Effects
+##  2. Market Dynamics During the Pandemic
 
-To evaluate co-movement, we plotted scatterplots between:
+###  Adjusted Prices  
+Sharp declines occurred between February and March 2020 due to lockdowns and uncertainty.
 
-- **JPM vs BAC** (same sector): strong linear relationship  
-- **JPM vs MSFT** (different sectors): lower correlation
+![Figure 1 - Adjusted Prices](images/adjusted_prices.png)
 
-**Figure 3**: Scatter plot — JPM vs BAC  
-**Figure 4**: Scatter plot — JPM vs MSFT  
+###  Daily Log-Returns  
+Spikes in volatility are clearly visible during the early pandemic period.
 
-**Observation**: During crises, correlations across sectors increase, reducing the benefits of diversification.
-
----
-
-## 4. Portfolio Construction and VaR Estimation
-
-An **equally weighted portfolio** was created by investing \$1000 in each stock. Daily portfolio return:
-
-\[
-R_{t}^{\text{port}} = \frac{1}{N} \sum_{i=1}^{N} R_{i,t}
-\]
-
-Two 1-day VaR estimates at the 95% confidence level:
-
-- **Empirical VaR** (historical simulation):  
-  \[
-  \text{VaR}_{\text{emp}} = \text{Quantile}_{0.05}(R_{t}^{\text{port}}) = -2.24\%
-  \]
-- **Parametric VaR** (assuming normal distribution):  
-  \[
-  \text{VaR}_{\text{norm}} = \mu - z_{\alpha} \cdot \sigma = \mu - 1.645 \cdot \sigma = -2.66\%
-  \]
-
-**Figure 5**: Daily log-return of the portfolio  
-> _[Line plot of portfolio returns with volatility spikes in March 2020]_
+![Figure 2 - Daily Log-Returns](images/daily_log_returns.png)
 
 ---
 
-## 5. VaR Backtesting on 2023
+##  3. Sector Relationships and Diversification
 
-We used **2023 portfolio data** to evaluate out-of-sample performance. The number of days with returns below the empirical VaR was counted.
+###  JPM vs BAC (Same Sector - Financials)  
+Strong linear correlation between the two banks.
 
-\[
-I_t = \mathbb{1}(R_{t}^{\text{port}} < \text{VaR}_{\alpha})
-\]
+![Figure 3 - JPM vs BAC](images/jpm_vs_bac.png)
 
-Only **1 violation** occurred out of 251 days (0.4% vs expected 5%), suggesting the model was conservative post-COVID.
+###  JPM vs MSFT (Different Sectors)  
+Weaker correlation due to cross-sector diversification.
+
+![Figure 4 - JPM vs MSFT](images/jpm_vs_msft.png)
+
+**Insight**: Correlation increases during crises, reducing the effectiveness of diversification.
 
 ---
 
-## 6. Dependence Analysis with Copulas
+##  4. Portfolio Construction and VaR Estimation
 
-We fitted **multivariate copulas** to pseudo-observations of returns from JPM, BAC, and GS.
+We created an equally weighted portfolio (\$1000 in each stock) and calculated the daily portfolio return.
 
-**Table 1**: AIC values for different copulas
+###  Portfolio Log-Returns
+
+![Figure 5 - Portfolio Return](images/portfolio_return.png)
+
+**1-Day VaR at 95% Confidence Level:**
+
+- **Empirical VaR**: −2.24%  
+- **Normal VaR**: −2.66%
+
+---
+
+##  5. Backtesting with 2023 Data
+
+Out of 251 trading days in 2023:
+
+- **Observed VaR violations**: 1  
+- **Expected at 5%**: ~12  
+- **Conclusion**: Model is **conservative** in the post-COVID market.
+
+**Kupiec Test Result:**
+
+- Likelihood Ratio: 11.83  
+- p-value: 0.0006  
+- **Verdict**: Reject the null — the model overestimates risk.
+
+---
+
+## 📈 6. Copula Analysis (JPM, BAC, GS)
+
+To model dependency between financial institutions, we applied copulas to pseudo-observations.
+
+###  AIC Comparison (Multivariate)
 
 | Copula Model | AIC     |
 |--------------|---------|
@@ -101,18 +103,13 @@ We fitted **multivariate copulas** to pseudo-observations of returns from JPM, B
 | Clayton      | -2499   |
 | Gumbel       | -2993   |
 
-**Observation**: The **Student-t copula** provides the best fit, capturing joint tail risk.
+**Best fit**: Student-t copula (captures joint tail risk)
 
 ---
 
-### 6.1 Additional Copula Analysis (JPM vs BAC)
+##  7. Bivariate Copula (JPM vs BAC)
 
-Using the `QRM` and `tseries` packages:
-
-- Pseudo-observations via empirical CDF
-- Fitted copulas: Gaussian, Student-t, Gumbel, Clayton
-
-**Table 2**: Log-likelihood values
+###  Log-Likelihood Comparison
 
 | Copula Model | Log-Likelihood |
 |--------------|----------------|
@@ -121,43 +118,28 @@ Using the `QRM` and `tseries` packages:
 | Gumbel       | 952            |
 | Clayton      | 752            |
 
-**Spearman’s ρ**: 0.91  
-**Kendall’s τ**: ≈ 0.925  
-
-**Figure 6**: Pseudo-observations plot (JPM vs BAC)  
-> _[Scatterplot of uniform pseudo-observations]_
+- **Spearman’s rho**: 0.91  
+- **Kendall’s tau**: ~0.925  
+- Strong co-movement in crisis periods
 
 ---
 
-## 7. Backtesting the Empirical VaR: Kupiec Test
+##  Conclusion
 
-To statistically assess the 1-day 95% VaR:
-
-- Only **1 violation in 251 days**
-- Kupiec Likelihood Ratio Test:
-
-\[
-\text{LR}_{\text{POF}} = -2 \cdot \ln \left( \frac{(1 - \hat{p})^{T - x} \hat{p}^x}{(1 - \alpha)^{T - x} \alpha^x} \right)
-\]
-
-Where:
-
-- \( x = 1 \), \( T = 251 \), \( \hat{p} = x/T = 0.004 \)
-
-Test result:
-
-- \( \text{LR}_{\text{POF}} = 11.83 \)
-- p-value = 0.0006
-
-**Conclusion**: The null hypothesis of correct coverage is **rejected** — the model **overestimates risk**.
+- COVID-19 led to systemic risk and high volatility  
+- Diversification failed during stress periods  
+- Empirical VaR was conservative post-crisis  
+- Student-t copula best captured joint risk
 
 ---
 
-## Conclusion
+##  Appendix
 
-- The COVID-19 crisis created **extreme volatility**, **surging correlations**, and **systemic risk**, especially in financials.
-- **Diversification helped** during normal times, but **failed in crises**.
-- **Empirical VaR** produced realistic forecasts but **overestimated** risk in 2023.
-- The **Student-t copula** effectively modeled **joint tail dependence**, especially for financial stocks.
+- Full R code available in [`R_script.R`](R_script.R)
+- Data source: Yahoo Finance via `tidyquant`
 
 ---
+
+##  Contact
+
+Feel free to open an issue or pull request for feedback or collaboration.
